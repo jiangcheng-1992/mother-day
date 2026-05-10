@@ -61,6 +61,42 @@ async function clickAnchorAndMeasure(page, hash) {
   }, hash);
 }
 
+async function measureMobileLayout(page) {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.waitForSelector("#story-detail:not(.is-hidden)");
+
+  const detail = await page.evaluate(() => {
+    const stages = document.querySelector("#detail-stages");
+    const columns = getComputedStyle(stages).gridTemplateColumns.split(" ").filter(Boolean).length;
+    return { stageColumns: columns };
+  });
+
+  await page.locator("#close-detail").click();
+  await page.waitForSelector(".hero:not(.is-hidden)");
+  await page.locator('.nav-links a[href="#ranking"]').click();
+  await page.waitForSelector("#ranking");
+
+  const home = await page.evaluate(() => {
+    const topbar = document.querySelector(".topbar").getBoundingClientRect();
+    const statTops = [...document.querySelectorAll("#stats article")]
+      .map((item) => Math.round(item.getBoundingClientRect().top));
+    const rankingCard = document.querySelector(".ranking-card")?.getBoundingClientRect();
+    const rankingCount = document.querySelector(".ranking-count")?.getBoundingClientRect();
+    return {
+      topbarHeight: Math.round(topbar.height),
+      statsSameRow: new Set(statTops).size === 1,
+      rankingCountCompact: Boolean(rankingCard && rankingCount && rankingCount.width <= 48 && rankingCount.top < rankingCard.bottom),
+    };
+  });
+
+  await page.setViewportSize({ width: 1360, height: 980 });
+  if (detail.stageColumns !== 1) throw new Error("Mobile detail stages should be single column");
+  if (home.topbarHeight > 96) throw new Error("Mobile topbar is too tall");
+  if (!home.statsSameRow) throw new Error("Mobile stats should stay in one compact row");
+  if (!home.rankingCountCompact) throw new Error("Mobile ranking card count should stay compact");
+  return { ...detail, ...home };
+}
+
 (async () => {
   const browser = await chromium.launch({ headless: true });
   const page = await browser.newPage({ viewport: { width: 1360, height: 980 } });
@@ -137,6 +173,7 @@ async function clickAnchorAndMeasure(page, hash) {
   );
   result.reopenedCaption = await page.locator("#preview-caption").innerText();
   await page.locator("#close-play").click();
+  result.mobileLayout = await measureMobileLayout(page);
   result.rankingAnchor = await clickAnchorAndMeasure(page, "#ranking");
   result.statsAnchor = await clickAnchorAndMeasure(page, "#stats");
   result.stats = await page.locator("#stats").innerText();

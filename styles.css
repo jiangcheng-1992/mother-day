@@ -1505,24 +1505,86 @@ h3 {
 }
 
 @media (max-width: 720px) {
+  body {
+    overflow-x: hidden;
+  }
+
   .topbar {
     align-items: flex-start;
     flex-direction: column;
-    gap: 12px;
+    gap: 8px;
+    padding: 10px 14px;
+  }
+
+  .brand {
+    font-size: 14px;
+  }
+
+  .brand-mark {
+    width: 17px;
+    height: 17px;
   }
 
   .nav-links {
     width: 100%;
+    gap: 6px;
     overflow-x: auto;
-    padding-bottom: 2px;
+    padding-bottom: 3px;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+
+  .nav-links::-webkit-scrollbar {
+    display: none;
+  }
+
+  .nav-links a {
+    flex: 0 0 auto;
+    min-height: 36px;
+    padding: 8px 11px;
+    white-space: nowrap;
   }
 
   .hero {
     min-height: auto;
-    padding-top: 70px;
+    gap: 18px;
+    padding: 34px 14px 20px;
+  }
+
+  h1 {
+    margin-bottom: 14px;
+    font-size: clamp(34px, 12vw, 48px);
+  }
+
+  h2 {
+    font-size: clamp(25px, 8vw, 34px);
+  }
+
+  .hero-copy {
+    margin-bottom: 18px;
+    font-size: 15px;
+    line-height: 1.65;
+  }
+
+  .hero-actions {
+    gap: 10px;
+  }
+
+  .section {
+    padding: 44px 14px;
+  }
+
+  .section-heading {
+    margin-bottom: 20px;
+  }
+
+  .section-heading p:not(.eyebrow) {
+    font-size: 15px;
+    line-height: 1.7;
   }
 
   .hero-ranking {
+    margin-top: 18px;
     padding: 14px;
   }
 
@@ -1531,7 +1593,30 @@ h3 {
   }
 
   .hero-ranking .ranking-card {
-    grid-template-columns: auto 1fr;
+    grid-template-columns: auto 1fr auto;
+    gap: 9px;
+    padding: 11px;
+  }
+
+  .ranking-number {
+    min-width: 48px;
+    min-height: 30px;
+    font-size: 12px;
+  }
+
+  .hero-ranking .ranking-body h3 {
+    font-size: 16px;
+  }
+
+  .hero-ranking .ranking-body p {
+    font-size: 12px;
+  }
+
+  .hero-ranking .ranking-count {
+    grid-column: auto;
+    width: 38px;
+    height: 38px;
+    font-size: 18px;
   }
 
   .hero-bg {
@@ -1551,10 +1636,23 @@ h3 {
     grid-template-columns: 1fr;
   }
 
-  .hero-ranking .ranking-count {
-    grid-column: 1 / -1;
-    width: 100%;
-    height: 36px;
+  .stats-strip {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    margin-top: 18px;
+  }
+
+  .stats-strip article {
+    padding: 12px 8px;
+  }
+
+  .stats-strip strong {
+    font-size: 26px;
+  }
+
+  .stats-strip span {
+    display: block;
+    font-size: 12px;
+    line-height: 1.35;
   }
 
   .upload-grid {
@@ -1583,12 +1681,48 @@ h3 {
   .board-toolbar {
     align-items: stretch;
     flex-direction: column;
+    gap: 12px;
   }
 
   .primary-action,
   .secondary-action,
   .ghost-button {
     width: 100%;
+  }
+
+  .story-detail {
+    padding: 18px 12px 56px;
+  }
+
+  .detail-shell {
+    padding: 14px;
+  }
+
+  .detail-layout {
+    gap: 14px;
+    margin-top: 14px;
+  }
+
+  .detail-total {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .detail-blessing-list {
+    max-height: 190px;
+  }
+
+  .detail-stages {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .stage-detail-card {
+    padding: 12px;
+  }
+
+  .stage-detail-photo img {
+    aspect-ratio: 16 / 10;
   }
 
   .puzzle-board {
@@ -1603,7 +1737,7 @@ h3 {
   }
 
   .play-section {
-    padding-inline: 12px;
+    padding: 0 10px 54px;
   }
 
   .play-shell,
@@ -1611,8 +1745,49 @@ h3 {
     padding: 12px;
   }
 
+  .play-layout {
+    gap: 14px;
+    margin-top: 14px;
+  }
+
   .side-panel {
     gap: 12px;
+    padding: 12px;
+  }
+
+  .photo-preview {
+    display: grid;
+    grid-template-columns: 88px 1fr;
+    align-items: stretch;
+  }
+
+  .photo-preview img {
+    height: 100%;
+    min-height: 88px;
+    aspect-ratio: 1;
+  }
+
+  .photo-preview figcaption {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+  }
+
+  .note-panel,
+  .stage-stats {
+    padding: 12px;
+  }
+
+  .note-panel p {
+    font-size: 16px;
+  }
+
+  .stage-stats {
+    justify-content: center;
+  }
+
+  .stage-stats strong {
+    font-size: 28px;
   }
 
   .board-actions {
@@ -1625,11 +1800,48 @@ h3 {
     min-height: 260px;
   }
 
+  .unlock {
+    padding: 0 10px 64px;
+  }
+
+  .unlock-card {
+    gap: 16px;
+    padding: 14px;
+  }
+
+  .unlock-copy blockquote {
+    font-size: 21px;
+  }
+
   .music-toggle {
     right: 14px;
     bottom: 14px;
     min-height: 42px;
     padding: 9px 12px;
+  }
+}
+
+@media (max-width: 420px) {
+  .hero {
+    padding-inline: 12px;
+  }
+
+  .stats-strip span {
+    font-size: 11px;
+  }
+
+  .upload-card {
+    min-height: 150px;
+  }
+
+  .stage-play-button {
+    min-height: 48px;
+  }
+
+  .music-toggle {
+    max-width: 44px;
+    overflow: hidden;
+    padding-inline: 11px;
   }
 }
 
