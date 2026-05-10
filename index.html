@@ -1,0 +1,238 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>给妈妈的拼图祝福</title>
+    <link rel="stylesheet" href="styles.css?v=20260510-15" />
+  </head>
+  <body>
+    <header class="topbar" aria-label="网站导航">
+      <a class="brand" href="index.html" aria-label="回到首页">
+        <span class="brand-mark" aria-hidden="true"></span>
+        <span>给妈妈的拼图祝福</span>
+      </a>
+      <nav class="nav-links" aria-label="主要区域">
+        <a href="#create">制作</a>
+        <a href="#gallery">拼图墙</a>
+        <a href="#stats">祝福统计</a>
+      </nav>
+    </header>
+
+    <main id="home">
+      <section class="hero" aria-labelledby="hero-title">
+        <div class="hero-bg" aria-hidden="true"></div>
+        <div class="hero-content">
+          <p class="eyebrow">Mother's Day Puzzle</p>
+          <h1 id="hero-title">把一张照片，拼成一句想念。</h1>
+          <p class="hero-copy">
+            上传三张关于妈妈的照片，写下想说的话。别人拼好它们之后，才能看见藏在照片里的祝福，也能把自己的心意送给她。
+          </p>
+          <div class="hero-actions">
+            <a class="primary-action" href="#create">制作给妈妈的拼图</a>
+            <a class="secondary-action" href="#gallery">开始拼这份祝福</a>
+          </div>
+        </div>
+        <div class="stats-strip" id="stats" aria-label="全站祝福统计">
+          <article>
+            <strong data-stat="mothers">0</strong>
+            <span>位母亲收到祝福</span>
+          </article>
+          <article>
+            <strong data-stat="children">0</strong>
+            <span>位子女送出心意</span>
+          </article>
+          <article>
+            <strong data-stat="blessings">0</strong>
+            <span>句祝福被送达</span>
+          </article>
+        </div>
+      </section>
+
+      <section class="section create-section" id="create" aria-labelledby="create-title">
+        <div class="section-heading">
+          <p class="eyebrow">Create</p>
+          <h2 id="create-title">做一组只属于妈妈的三段拼图</h2>
+          <p>上传三张照片，分别生成9片、16片、25片拼图。发布后，每一张照片都会拥有自己的祝福数。</p>
+        </div>
+
+        <form class="creator" id="create-form">
+          <div class="form-grid">
+            <label class="field">
+              <span>妈妈的称呼</span>
+              <input id="mother-name" name="motherName" type="text" maxlength="20" placeholder="例如：妈妈 / 林女士 / 外婆" required />
+            </label>
+            <label class="field">
+              <span>送祝福的人</span>
+              <input id="child-name" name="childName" type="text" maxlength="20" placeholder="例如：女儿小安" required />
+            </label>
+          </div>
+
+          <label class="field">
+            <span>藏在拼图里的祝福</span>
+            <textarea id="main-blessing" name="mainBlessing" maxlength="120" placeholder="写一句想让妈妈拼好后看见的话" required></textarea>
+          </label>
+
+          <div class="upload-grid" aria-label="上传三张照片">
+            <label class="upload-card" data-preview-card="0">
+              <input id="photo-0" type="file" accept="image/*" />
+              <span class="upload-preview" data-preview="0"></span>
+              <span class="upload-cta">上传图片</span>
+              <strong>9片拼图</strong>
+            </label>
+            <label class="upload-card" data-preview-card="1">
+              <input id="photo-1" type="file" accept="image/*" />
+              <span class="upload-preview" data-preview="1"></span>
+              <span class="upload-cta">上传图片</span>
+              <strong>16片拼图</strong>
+            </label>
+            <label class="upload-card" data-preview-card="2">
+              <input id="photo-2" type="file" accept="image/*" />
+              <span class="upload-preview" data-preview="2"></span>
+              <span class="upload-cta">上传图片</span>
+              <strong>25片拼图</strong>
+            </label>
+          </div>
+
+          <div class="form-footer">
+            <p id="form-status" role="status" aria-live="polite">发布后，照片和祝福会公开展示，请勿上传不想公开的内容。</p>
+            <button class="primary-action button-action" type="submit">发布这份祝福</button>
+          </div>
+        </form>
+      </section>
+
+      <section class="section gallery-section" id="gallery" aria-labelledby="gallery-title">
+        <div class="section-heading">
+          <p class="eyebrow">Puzzle Wall</p>
+          <h2 id="gallery-title">正在被拼起的祝福</h2>
+          <p>每一张拼图都有自己的祝福轮播。拼好以后，你也可以把一句话送给这位妈妈。</p>
+        </div>
+        <div class="puzzle-wall" id="puzzle-wall" aria-live="polite"></div>
+      </section>
+
+      <section class="story-detail is-hidden" id="story-detail" aria-labelledby="detail-title">
+        <div class="detail-shell">
+          <div class="play-header">
+            <div>
+              <p class="eyebrow" id="detail-kicker">Puzzle Detail</p>
+              <h2 id="detail-title">拼图详情</h2>
+            </div>
+            <button class="ghost-button" id="close-detail" type="button">回到拼图墙</button>
+          </div>
+          <div class="detail-layout">
+            <figure class="detail-cover">
+              <img id="detail-image" alt="拼图详情照片" />
+              <figcaption id="detail-caption"></figcaption>
+            </figure>
+            <div class="detail-info">
+              <p class="blessing-carousel" id="detail-carousel"></p>
+              <div class="detail-total">
+                <strong id="detail-blessing-total">0</strong>
+                <span>句祝福累计送达</span>
+              </div>
+              <div class="detail-stages" id="detail-stages"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="play-section is-hidden" id="play" aria-labelledby="play-title">
+        <div class="play-shell">
+          <div class="play-header">
+            <div>
+              <p class="eyebrow" id="play-kicker">Puzzle</p>
+              <h2 id="play-title">开始拼这份祝福</h2>
+            </div>
+            <button class="ghost-button" id="close-play" type="button">回到拼图墙</button>
+          </div>
+
+          <div class="play-layout">
+            <div class="board-panel">
+              <div class="board-toolbar">
+                <div>
+                  <strong id="board-name">拼图</strong>
+                  <span id="board-meta">0片</span>
+                </div>
+                <div class="board-actions">
+                  <button class="ghost-button" id="shuffle-puzzle" type="button">重新打散</button>
+                  <button class="ghost-button" id="peek-image" type="button">看一眼原图</button>
+                </div>
+              </div>
+              <div class="progress-track" aria-label="拼图完成进度">
+                <span id="progress-bar"></span>
+              </div>
+              <div class="puzzle-board" id="puzzle-board" aria-label="可交换的拼图片"></div>
+            </div>
+
+            <aside class="side-panel">
+              <figure class="photo-preview">
+                <img id="side-preview" alt="拼图原图预览" />
+                <figcaption id="preview-caption">拼好后，照片会完整显现。</figcaption>
+              </figure>
+              <div class="note-panel">
+                <span>祝福正在流转</span>
+                <p id="play-carousel">愿妈妈今天被温柔包围。</p>
+              </div>
+              <div class="stage-stats">
+                <strong id="stage-blessing-count">0</strong>
+                <span>句祝福 · <b id="stage-play-count">0</b>次被拼起</span>
+              </div>
+            </aside>
+          </div>
+        </div>
+      </section>
+
+      <section class="unlock is-hidden" id="unlock" aria-labelledby="unlock-title">
+        <div class="unlock-card">
+          <div class="unlock-image-wrap">
+            <img id="unlock-image" alt="已解锁的完整照片" />
+          </div>
+          <div class="unlock-copy">
+            <p class="eyebrow">Unlocked</p>
+            <h2 id="unlock-title">你拼好了这份祝福</h2>
+            <blockquote id="unlock-blessing"></blockquote>
+            <form id="blessing-form" class="blessing-form">
+              <label class="field">
+                <span>也送上一句祝福</span>
+                <textarea id="visitor-blessing" maxlength="90" placeholder="谢谢你，把爱说出口。" required></textarea>
+              </label>
+              <label class="field compact-field">
+                <span>你的名字</span>
+                <input id="visitor-name" maxlength="18" placeholder="例如：一位子女" required />
+              </label>
+              <button class="primary-action button-action" type="submit">送出祝福</button>
+              <p class="blessing-status" id="blessing-status" role="status" aria-live="polite"></p>
+            </form>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <audio id="site-music" src="assets/site-music.mp3" preload="auto" loop></audio>
+    <button class="music-toggle" id="music-toggle" type="button" aria-label="开启音乐" aria-pressed="false" title="开启音乐">
+      <span class="music-wave" aria-hidden="true"></span>
+      <span class="music-text">音乐</span>
+    </button>
+
+    <template id="story-template">
+      <article class="story-card">
+        <div class="story-cover">
+          <img alt="" />
+          <div class="cover-shade"></div>
+          <div class="difficulty-row"></div>
+        </div>
+        <div class="story-body">
+          <div>
+            <p class="story-label"></p>
+            <h3></h3>
+          </div>
+          <p class="blessing-carousel"></p>
+          <div class="story-counts"></div>
+        </div>
+      </article>
+    </template>
+
+    <script src="config.js?v=20260510-15"></script>
+    <script src="app.js?v=20260510-15"></script>
+  </body>
+</html>

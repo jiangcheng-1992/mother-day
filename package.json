@@ -1,0 +1,14 @@
+{
+  "name": "mothers-day-puzzle",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "node server.mjs",
+    "preview": "node server.mjs",
+    "check": "node --check app.js && node --check server.mjs && node --check qa-api.cjs"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

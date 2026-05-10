@@ -1,0 +1,14 @@
+node_modules/
+.env
+
+data/stories.json
+data/*.tmp
+
+.chrome-preview/
+.chrome-preview-2/
+debug.log
+preview-server.log
+preview-server.err.log
+preview-*.png
+
+舒缓的钢琴曲 - 纯音乐网.mp3
