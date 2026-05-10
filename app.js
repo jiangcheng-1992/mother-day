@@ -2,6 +2,7 @@ const STORAGE_KEY = "mothersDayPuzzleStories";
 const MUSIC_PREF_KEY = "mothersDayPuzzleMusic";
 const API_ENABLED = typeof window.MOTHERS_DAY_API_BASE === "string";
 const API_BASE = API_ENABLED ? window.MOTHERS_DAY_API_BASE.replace(/\/$/, "") : "";
+const LIVE_REFRESH_MS = 12000;
 const STAGE_META = [
   { grid: 3, label: "9片拼图", pieces: 9 },
   { grid: 4, label: "16片拼图", pieces: 16 },
@@ -19,6 +20,9 @@ const state = {
   musicFade: null,
   musicStarted: false,
   storageMode: "local",
+  liveRefreshTimer: null,
+  liveRefreshInFlight: false,
+  storiesSignature: "",
   suppressTileClickUntil: 0,
   drag: {
     tile: null,
@@ -139,6 +143,18 @@ function loadLocalStories() {
   }
 }
 
+function storiesSignature(stories = state.stories) {
+  return JSON.stringify(stories.map((story) => ({
+    id: story.id,
+    updated: story.stages.map((stage) => ({
+      pieces: stage.pieces,
+      playCount: stage.playCount || 0,
+      blessings: stage.blessings.length,
+      latestBlessing: stage.blessings[0]?.createdAt || 0,
+    })),
+  })));
+}
+
 async function loadStories() {
   if (API_ENABLED) {
     try {
@@ -146,6 +162,7 @@ async function loadStories() {
       state.storageMode = "api";
       state.stories = Array.isArray(data.stories) ? data.stories : [];
       hydrateStories();
+      state.storiesSignature = storiesSignature();
       return;
     } catch {
       state.storageMode = "local";
@@ -154,6 +171,7 @@ async function loadStories() {
 
   state.stories = loadLocalStories();
   hydrateStories();
+  state.storiesSignature = storiesSignature();
 }
 
 function saveStories() {
@@ -189,6 +207,7 @@ function replaceStory(savedStory) {
     state.stories.unshift(story);
   }
   hydrateStories();
+  state.storiesSignature = storiesSignature();
   return state.stories.find((item) => item.id === story.id);
 }
 
@@ -1127,6 +1146,52 @@ function renderAll() {
   renderWall();
 }
 
+function renderLiveData() {
+  renderAll();
+
+  if (state.activeDetail) {
+    const story = state.stories.find((item) => item.id === state.activeDetail);
+    if (story && !elements.detail.classList.contains("is-hidden")) {
+      renderStoryDetail(story);
+    }
+  }
+
+  const active = currentActive();
+  if (active) {
+    elements.stageBlessingCount.textContent = active.stage.blessings.length;
+    elements.stagePlayCount.textContent = active.stage.playCount || 0;
+    elements.playCarousel.textContent = stageBlessingText(active.stage);
+  }
+}
+
+async function refreshLiveStories() {
+  if (state.storageMode !== "api" || state.liveRefreshInFlight || document.hidden) return;
+  state.liveRefreshInFlight = true;
+  try {
+    const data = await apiRequest("/api/stories");
+    const stories = Array.isArray(data.stories) ? data.stories : [];
+    const signature = storiesSignature(stories);
+    if (signature !== state.storiesSignature) {
+      state.stories = stories;
+      hydrateStories();
+      state.storiesSignature = storiesSignature();
+      renderLiveData();
+    }
+  } catch {
+    // Keep the current view stable; the next interval will retry.
+  } finally {
+    state.liveRefreshInFlight = false;
+  }
+}
+
+function startLiveRefresh() {
+  if (state.storageMode !== "api" || state.liveRefreshTimer) return;
+  state.liveRefreshTimer = window.setInterval(refreshLiveStories, LIVE_REFRESH_MS);
+  document.addEventListener("visibilitychange", () => {
+    if (!document.hidden) refreshLiveStories();
+  });
+}
+
 function refreshCarouselText() {
   [...elements.wall.querySelectorAll(".story-card")].forEach((card, index) => {
     const story = state.stories[index];
@@ -1240,6 +1305,7 @@ async function init() {
   }
   renderAll();
   startCarousel();
+  startLiveRefresh();
   openSharedPuzzleFromUrl();
 }
 

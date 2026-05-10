@@ -34,6 +34,16 @@ const baseUrl = process.env.BASE_URL || "http://localhost:4173";
   const detailText = await secondPage.locator("#story-detail").innerText();
   const formStatus = await page.locator("#form-status").innerText();
 
+  await page.evaluate(async ({ id }) => {
+    await fetch(`/api/stories/${id}/stages/9/blessings`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ name: "实时访客", text: "这句祝福会自动刷新出来。" }),
+    });
+  }, { id: story.id });
+  await secondPage.waitForFunction(() => document.body.innerText.includes("实时访客"), null, { timeout: 18000 });
+  const liveDetailText = await secondPage.locator("#story-detail").innerText();
+
   await browser.close();
 
   console.log(JSON.stringify({
@@ -41,6 +51,7 @@ const baseUrl = process.env.BASE_URL || "http://localhost:4173";
     persistedMother: story.motherName,
     detailOpenedFromPublicLink: detailText.includes("测试妈妈"),
     hasPublicNotice: formStatus.includes("公开"),
+    liveRefreshShowsBlessing: liveDetailText.includes("实时访客"),
     errors,
   }, null, 2));
 })().catch((error) => {
