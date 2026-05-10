@@ -6,9 +6,13 @@
   "scripts": {
     "start": "node server.mjs",
     "preview": "node server.mjs",
-    "check": "node --check app.js && node --check server.mjs && node --check qa-api.cjs"
+    "check": "node --check app.js && node --check server.mjs && node --check qa-api.cjs && node --check qa-deploy.cjs",
+    "qa:deploy": "node qa-deploy.cjs"
   },
   "engines": {
     "node": ">=18"
+  },
+  "devDependencies": {
+    "playwright": "^1.59.1"
   }
 }

@@ -1,6 +1,6 @@
-# 给妈妈的拼图祝福
+# 送给妈妈的情书
 
-一个母亲节公开拼图祝福网站。用户上传三张照片和祝福后，网站会生成 9 片、16 片、25 片三组拼图；其他人通过链接进入后可以完成拼图、解锁照片并继续送祝福。
+一个母亲节公开拼图情书网站。用户上传三张照片和祝福后，网站会生成 9 片、16 片、25 片三组拼图；其他人通过链接进入后可以完成拼图、解锁照片并继续送祝福。
 
 ## 现在的线上数据方式
 
@@ -50,6 +50,28 @@ MAX_BODY_BYTES=12582912
 ## 部署建议
 
 这个版本适合部署到支持 Node 服务和持久磁盘的平台，例如 VPS、Render/Railway 的持久卷、Fly.io volume 等。
+
+当前 GitHub Pages 前端会通过 `config.js` 自动连接：
+
+```text
+https://mother-day-f0lj.onrender.com
+```
+
+上线时必须确认 `assets/` 目录也被提交并部署，否则首屏背景、默认拼图图、音乐等静态资源会显示不出来。
+
+发布后运行线上冒烟检查：
+
+```bash
+npm run qa:deploy
+```
+
+该检查会验证 GitHub Pages 和 Render 的 `index.html`、CSS、脚本、首屏图片、音乐文件以及 API 健康状态；任意资源返回 404 都会失败。
+
+如果 Render 使用免费实例且没有挂载持久磁盘，`data/stories.json` 可能会在重启或重新部署后丢失。正式对外发布前，请给 Render 服务挂载持久 Disk，并把 `DATA_FILE` 指到磁盘路径，例如：
+
+```text
+DATA_FILE=/var/data/stories.json
+```
 
 不要只部署到 GitHub Pages：GitHub Pages 只能托管静态文件，不能保存用户上传的照片和祝福。若要前端托管在 GitHub Pages，需要另外部署 API，并在 `config.js` 中填写 API 地址。
 

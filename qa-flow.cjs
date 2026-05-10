@@ -1,7 +1,10 @@
 const { chromium } = require("playwright");
 const path = require("node:path");
+const { pathToFileURL } = require("node:url");
 
-const root = "file:///C:/Users/Admin/Downloads/mother-day/index.html";
+const root = process.env.BASE_URL
+  ? `${process.env.BASE_URL.replace(/\/$/, "")}/index.html`
+  : pathToFileURL(path.resolve(__dirname, "index.html")).href;
 const photo = path.resolve("assets/hero-mothers-day.png");
 
 async function solveByClicks(page) {

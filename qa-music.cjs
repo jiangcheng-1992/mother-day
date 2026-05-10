@@ -1,5 +1,7 @@
 const { chromium } = require("playwright");
 
+const baseUrl = process.env.BASE_URL || "http://localhost:4173";
+
 (async () => {
   const browser = await chromium.launch({ headless: true });
   const page = await browser.newPage({ viewport: { width: 1360, height: 900 } });
@@ -9,7 +11,7 @@ const { chromium } = require("playwright");
     if (message.type() === "error") errors.push(message.text());
   });
 
-  await page.goto(`http://localhost:4173/index.html?music=${Date.now()}`, { waitUntil: "load" });
+  await page.goto(`${baseUrl}/index.html?music=${Date.now()}`, { waitUntil: "load" });
   const audioExists = await page.locator("#site-music").count();
   const toggleExists = await page.locator("#music-toggle").count();
   await page.locator("#music-toggle").click();

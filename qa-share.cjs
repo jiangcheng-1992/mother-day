@@ -1,4 +1,10 @@
 const { chromium } = require("playwright");
+const path = require("node:path");
+const { pathToFileURL } = require("node:url");
+
+const root = process.env.BASE_URL
+  ? `${process.env.BASE_URL.replace(/\/$/, "")}/index.html`
+  : pathToFileURL(path.resolve(__dirname, "index.html")).href;
 
 (async () => {
   const errors = [];
@@ -9,7 +15,7 @@ const { chromium } = require("playwright");
     if (message.type() === "error") errors.push(message.text());
   });
 
-  await page.goto("http://localhost:4173/index.html?qa=share", { waitUntil: "load" });
+  await page.goto(`${root}?qa=share`, { waitUntil: "load" });
   await page.evaluate(() => localStorage.clear());
   await page.reload({ waitUntil: "load" });
 
@@ -20,11 +26,8 @@ const { chromium } = require("playwright");
   const detailText = await page.locator("#story-detail").innerText();
   const stageSummaries = await page.locator("#detail-stages .stage-summary").count();
   const shareLink = await page.evaluate(() => {
-    const stories = JSON.parse(localStorage.getItem("mothersDayPuzzleStories"));
     const url = new URL(window.location.href);
-    url.search = "";
     url.hash = "";
-    url.searchParams.set("story", stories[0].id);
     url.searchParams.set("stage", "9");
     return url.toString();
   });
