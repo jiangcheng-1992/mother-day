@@ -41,7 +41,9 @@ const elements = {
   detailCaption: document.querySelector("#detail-caption"),
   detailCarousel: document.querySelector("#detail-carousel"),
   detailBlessingTotal: document.querySelector("#detail-blessing-total"),
+  detailBlessingBoard: document.querySelector("#detail-blessing-board"),
   detailStages: document.querySelector("#detail-stages"),
+  rankingList: document.querySelector("#ranking-list"),
   stats: {
     mothers: document.querySelector('[data-stat="mothers"]'),
     children: document.querySelector('[data-stat="children"]'),
@@ -72,7 +74,7 @@ const elements = {
   visitorName: document.querySelector("#visitor-name"),
   music: document.querySelector("#site-music"),
   musicToggle: document.querySelector("#music-toggle"),
-  homeSections: [...document.querySelectorAll(".hero, .create-section, .gallery-section")],
+  homeSections: [...document.querySelectorAll(".hero, .ranking-section, .create-section, .gallery-section")],
 };
 
 function demoStories() {
@@ -272,6 +274,27 @@ function storyBlessings(story) {
 
 function storyTotalBlessings(story) {
   return storyBlessings(story).length;
+}
+
+function storyBlessingItems(story) {
+  return story.stages.flatMap((stage) =>
+    stage.blessings.map((blessing) => ({
+      ...blessing,
+      stageLabel: stage.label,
+      pieces: stage.pieces,
+    }))
+  ).sort((a, b) => Number(b.createdAt || 0) - Number(a.createdAt || 0));
+}
+
+function motherRankings() {
+  return [...state.stories]
+    .map((story) => ({
+      story,
+      total: storyTotalBlessings(story),
+      unlocked: storyIsUnlocked(story),
+    }))
+    .filter((item) => item.total > 0)
+    .sort((a, b) => b.total - a.total || Number(b.story.createdAt || 0) - Number(a.story.createdAt || 0));
 }
 
 function unlockedStages(story) {
@@ -496,9 +519,94 @@ function renderWall() {
   });
 }
 
+function renderRanking() {
+  elements.rankingList.innerHTML = "";
+  const rankings = motherRankings();
+
+  if (!rankings.length) {
+    elements.rankingList.innerHTML = '<div class="empty-state">还没有排行榜。送出第一句祝福后，这里会出现最受祝福的妈妈。</div>';
+    return;
+  }
+
+  rankings.slice(0, 8).forEach(({ story, total }, index) => {
+    const item = document.createElement("article");
+    item.className = "ranking-card";
+    item.setAttribute("role", "button");
+    item.setAttribute("tabindex", "0");
+    item.setAttribute("aria-label", `查看${story.motherName}收到的祝福`);
+
+    const rank = document.createElement("strong");
+    rank.className = "ranking-number";
+    rank.textContent = `No.${index + 1}`;
+
+    const body = document.createElement("div");
+    body.className = "ranking-body";
+    const title = document.createElement("h3");
+    title.textContent = story.motherName;
+    const meta = document.createElement("p");
+    meta.textContent = `${story.childName}发起 · ${total}句祝福`;
+    body.append(title, meta);
+
+    const count = document.createElement("span");
+    count.className = "ranking-count";
+    count.textContent = `${total}`;
+
+    const open = () => openStoryDetail(story.id);
+    item.addEventListener("click", open);
+    item.addEventListener("keydown", (event) => {
+      if (event.key === "Enter" || event.key === " ") {
+        event.preventDefault();
+        open();
+      }
+    });
+
+    item.append(rank, body, count);
+    elements.rankingList.appendChild(item);
+  });
+}
+
+function appendBlessingListItem(list, blessing, metaText = "") {
+  const item = document.createElement("li");
+  const name = document.createElement("strong");
+  name.textContent = blessing.name || "一位朋友";
+  const text = document.createElement("span");
+  text.textContent = blessing.text || "送上祝福。";
+  item.append(name, text);
+  if (metaText) {
+    const meta = document.createElement("small");
+    meta.textContent = metaText;
+    item.appendChild(meta);
+  }
+  list.appendChild(item);
+}
+
+function renderDetailBlessingBoard(story) {
+  const blessings = storyBlessingItems(story);
+  elements.detailBlessingBoard.innerHTML = "";
+
+  const title = document.createElement("div");
+  title.className = "detail-board-head";
+  const heading = document.createElement("strong");
+  heading.textContent = "全部祝福";
+  const count = document.createElement("span");
+  count.textContent = `${blessings.length}句`;
+  title.append(heading, count);
+
+  const list = document.createElement("ul");
+  list.className = "stage-blessing-list detail-blessing-list";
+  if (blessings.length) {
+    blessings.forEach((blessing) => appendBlessingListItem(list, blessing, blessing.stageLabel));
+  } else {
+    appendBlessingListItem(list, { text: "还在等待第一句祝福。" });
+  }
+
+  elements.detailBlessingBoard.append(title, list);
+}
+
 function createStageDetail(story, stage) {
   const summary = document.createElement("section");
   summary.className = "stage-summary stage-detail-card";
+  summary.dataset.stagePieces = String(stage.pieces);
   const isUnlocked = (stage.playCount || 0) > 0;
 
   const figure = document.createElement("figure");
@@ -537,21 +645,9 @@ function createStageDetail(story, stage) {
   const list = document.createElement("ul");
   list.className = "stage-blessing-list";
   if (stage.blessings.length) {
-    stage.blessings.forEach((blessing) => {
-      const item = document.createElement("li");
-      const name = document.createElement("strong");
-      name.textContent = blessing.name || "一位朋友";
-      const text = document.createElement("span");
-      text.textContent = blessing.text || "送上祝福。";
-      item.append(name, text);
-      list.appendChild(item);
-    });
+    stage.blessings.forEach((blessing) => appendBlessingListItem(list, blessing));
   } else {
-    const item = document.createElement("li");
-    const text = document.createElement("span");
-    text.textContent = "还在等待第一句祝福。";
-    item.appendChild(text);
-    list.appendChild(item);
+    appendBlessingListItem(list, { text: "还在等待第一句祝福。" });
   }
 
   const inlineActions = document.createElement("div");
@@ -559,7 +655,7 @@ function createStageDetail(story, stage) {
   const playButton = document.createElement("button");
   playButton.className = "stage-play-button";
   playButton.type = "button";
-  playButton.textContent = `开始拼${stage.pieces}片`;
+  playButton.textContent = isUnlocked ? "查看拼图" : `开始拼${stage.pieces}片`;
   playButton.addEventListener("click", () => startPuzzle(story.id, stage.pieces));
 
   const shareButton = document.createElement("button");
@@ -591,6 +687,7 @@ function renderStoryDetail(story) {
   elements.detail.querySelector(".detail-cover").classList.toggle("is-unlocked", unlocked);
   elements.detailCarousel.textContent = carouselTextForStory(story);
   elements.detailBlessingTotal.textContent = storyTotalBlessings(story);
+  renderDetailBlessingBoard(story);
   elements.detailStages.innerHTML = "";
   story.stages.forEach((stage) => {
     elements.detailStages.appendChild(createStageDetail(story, stage));
@@ -609,7 +706,18 @@ function openStoryDetail(storyId, options = {}) {
   if (options.updateUrl !== false) {
     updateStoryUrl(storyId);
   }
-  window.scrollTo({ top: 0, left: 0, behavior: "smooth" });
+  if (options.scrollToStagePieces) {
+    window.setTimeout(() => {
+      const target = elements.detail.querySelector(`[data-stage-pieces="${options.scrollToStagePieces}"] .stage-blessing-list`);
+      target?.scrollIntoView({ behavior: "smooth", block: "center" });
+    }, 80);
+  } else if (options.scrollToBlessings) {
+    window.setTimeout(() => {
+      elements.detailBlessingBoard.scrollIntoView({ behavior: "smooth", block: "center" });
+    }, 80);
+  } else {
+    window.scrollTo({ top: 0, left: 0, behavior: "smooth" });
+  }
 }
 
 function setupUploads() {
@@ -921,9 +1029,9 @@ async function submitVisitorBlessing(event) {
   elements.visitorName.value = "";
   elements.stageBlessingCount.textContent = updated?.stage.blessings.length || 0;
   elements.playCarousel.textContent = updated ? stageBlessingText(updated.stage) : "";
-  renderAll();
-  elements.previewCaption.textContent = "谢谢你，这句祝福已经送到了。";
   elements.blessingStatus.textContent = "已经送出。谢谢你，把爱说出口。";
+  renderAll();
+  openStoryDetail(active.story.id, { scrollToStagePieces: active.stage.pieces });
 }
 
 function peekImage() {
@@ -939,6 +1047,7 @@ function peekImage() {
 
 function renderAll() {
   updateStats();
+  renderRanking();
   renderWall();
 }
 

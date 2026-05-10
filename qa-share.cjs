@@ -47,10 +47,10 @@ const root = process.env.BASE_URL
   await page.locator("#visitor-blessing").fill("分享链接打开后也能继续送祝福。");
   await page.locator("#visitor-name").fill("分享访客");
   await page.locator("#blessing-form button").click();
-  await page.locator("#close-play").click();
   await page.waitForSelector("#story-detail:not(.is-hidden)");
 
   const updatedDetailText = await page.locator("#story-detail").innerText();
+  const completedButtonText = await page.locator('#detail-stages [data-stage-pieces="9"] .stage-play-button').innerText();
   await browser.close();
 
   console.log(JSON.stringify({
@@ -63,6 +63,7 @@ const root = process.env.BASE_URL
     detailTiles,
     updatedHasPlayCount: updatedDetailText.includes("1次被拼起"),
     updatedHasSender: updatedDetailText.includes("分享访客"),
+    completedButtonText,
     errors,
   }, null, 2));
 })().catch((error) => {

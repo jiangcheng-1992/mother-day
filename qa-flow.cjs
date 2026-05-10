@@ -80,6 +80,10 @@ async function solveByClicks(page) {
   await page.locator("#visitor-blessing").fill("愿妈妈今天拥有很多很多被看见的幸福。");
   await page.locator("#visitor-name").fill("测试访客");
   await page.locator("#blessing-form button").click();
+  await page.waitForSelector("#story-detail:not(.is-hidden)");
+  result.afterBlessingDetailVisible = await page.locator("#story-detail").isVisible();
+  result.blessingListHasVisitor = (await page.locator("#story-detail").innerText()).includes("测试访客");
+  result.completedButtonText = await page.locator('#detail-stages [data-stage-pieces="9"] .stage-play-button').innerText();
   result.stats = await page.locator("#stats").innerText();
   result.errors = errors;
   await browser.close();

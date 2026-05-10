@@ -284,6 +284,71 @@ h3 {
   line-height: 1.8;
 }
 
+.ranking-section {
+  background:
+    linear-gradient(180deg, rgba(255, 253, 251, 0.94), rgba(255, 248, 243, 0.78)),
+    radial-gradient(circle at 90% 18%, rgba(217, 168, 78, 0.12), transparent 26%);
+}
+
+.ranking-list {
+  width: min(960px, 100%);
+  display: grid;
+  gap: 12px;
+}
+
+.ranking-card {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 14px;
+  padding: 16px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: rgba(255, 253, 251, 0.9);
+  box-shadow: 0 16px 36px rgba(90, 50, 42, 0.08);
+  cursor: pointer;
+}
+
+.ranking-card:hover {
+  border-color: rgba(201, 79, 99, 0.38);
+  transform: translateY(-1px);
+}
+
+.ranking-number,
+.ranking-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  font-weight: 900;
+}
+
+.ranking-number {
+  min-width: 58px;
+  min-height: 34px;
+  background: rgba(217, 168, 78, 0.16);
+  color: var(--gold);
+  font-size: 13px;
+}
+
+.ranking-body h3 {
+  margin-bottom: 4px;
+}
+
+.ranking-body p {
+  margin-bottom: 0;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.ranking-count {
+  width: 48px;
+  height: 48px;
+  background: linear-gradient(135deg, var(--rose), var(--coral));
+  color: #fffdfb;
+  font-size: 22px;
+}
+
 .creator {
   width: min(1120px, 100%);
   display: grid;
@@ -654,9 +719,12 @@ h3 {
 
 .stage-blessing-list li {
   display: grid;
-  gap: 3px;
-  border-left: 3px solid rgba(201, 79, 99, 0.3);
-  padding-left: 8px;
+  gap: 5px;
+  border: 1px solid rgba(201, 79, 99, 0.12);
+  border-left: 4px solid rgba(201, 79, 99, 0.46);
+  border-radius: 6px;
+  padding: 9px 10px;
+  background: rgba(255, 253, 251, 0.78);
 }
 
 .stage-blessing-list strong {
@@ -668,6 +736,16 @@ h3 {
   color: var(--muted);
   font-size: 12px;
   line-height: 1.5;
+}
+
+.stage-blessing-list small {
+  width: fit-content;
+  border-radius: 999px;
+  padding: 4px 7px;
+  background: rgba(201, 79, 99, 0.08);
+  color: var(--rose-deep);
+  font-size: 11px;
+  font-weight: 800;
 }
 
 .stage-inline-actions {
@@ -811,6 +889,40 @@ h3 {
 .detail-total span {
   color: var(--muted);
   font-size: 13px;
+}
+
+.detail-blessing-board {
+  display: grid;
+  gap: 10px;
+  padding: 14px;
+  border: 1px solid rgba(201, 79, 99, 0.14);
+  border-radius: var(--radius);
+  background: rgba(255, 248, 243, 0.72);
+}
+
+.detail-board-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.detail-board-head strong {
+  color: var(--ink);
+  font-size: 16px;
+}
+
+.detail-board-head span {
+  border-radius: 999px;
+  padding: 6px 9px;
+  background: rgba(201, 79, 99, 0.1);
+  color: var(--rose-deep);
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.detail-blessing-list {
+  max-height: 230px;
 }
 
 .detail-stages {
@@ -1334,10 +1446,20 @@ h3 {
 
   .stats-strip,
   .form-grid,
+  .ranking-card,
   .puzzle-wall,
   .side-panel,
   .story-counts {
     grid-template-columns: 1fr;
+  }
+
+  .ranking-card {
+    align-items: stretch;
+  }
+
+  .ranking-count {
+    width: 100%;
+    height: 40px;
   }
 
   .upload-grid {
