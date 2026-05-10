@@ -19,6 +19,14 @@ const state = {
   musicFade: null,
   musicStarted: false,
   storageMode: "local",
+  suppressTileClickUntil: 0,
+  drag: {
+    tile: null,
+    pointerId: null,
+    startX: 0,
+    startY: 0,
+    moved: false,
+  },
 };
 
 function normalizeHomeHash() {
@@ -900,7 +908,14 @@ function buildBoard(stage) {
     tile.dataset.current = current;
     tile.setAttribute("aria-label", `第${position + 1}个拼图片`);
     paintTile(tile, stage);
-    tile.addEventListener("click", () => pickTile(tile));
+    tile.addEventListener("click", (event) => {
+      if (event.detail === 0 || Date.now() < state.suppressTileClickUntil) return;
+      pickTile(tile);
+    });
+    tile.addEventListener("pointerdown", (event) => startTileGesture(event, tile));
+    tile.addEventListener("pointermove", moveTileGesture);
+    tile.addEventListener("pointerup", endTileGesture);
+    tile.addEventListener("pointercancel", cancelTileGesture);
     tile.addEventListener("dragstart", (event) => {
       event.dataTransfer.setData("text/plain", tile.dataset.position);
     });
@@ -926,6 +941,67 @@ function shufflePieces(items) {
     }
   } while (shuffled.every((item, index) => item === index));
   return shuffled;
+}
+
+function startTileGesture(event, tile) {
+  if (state.solved || event.button > 0) return;
+  state.drag = {
+    tile,
+    pointerId: event.pointerId,
+    startX: event.clientX,
+    startY: event.clientY,
+    moved: false,
+  };
+  tile.setPointerCapture?.(event.pointerId);
+  tile.classList.add("is-gesture-source");
+}
+
+function moveTileGesture(event) {
+  if (state.drag.pointerId !== event.pointerId || !state.drag.tile) return;
+  const dx = event.clientX - state.drag.startX;
+  const dy = event.clientY - state.drag.startY;
+  const distance = Math.hypot(dx, dy);
+  if (distance < 8 && !state.drag.moved) return;
+
+  state.drag.moved = true;
+  event.preventDefault();
+  state.drag.tile.classList.add("is-dragging");
+  state.drag.tile.style.transform = `translate(${dx}px, ${dy}px) scale(1.04)`;
+}
+
+function endTileGesture(event) {
+  if (state.drag.pointerId !== event.pointerId || !state.drag.tile) return;
+  const source = state.drag.tile;
+  const wasMoved = state.drag.moved;
+  resetTileGesture();
+
+  if (!wasMoved) return;
+  state.suppressTileClickUntil = Date.now() + 350;
+  const target = document.elementFromPoint(event.clientX, event.clientY)?.closest?.(".tile");
+  if (target && target !== source && elements.board.contains(target)) {
+    swapTiles(source, target);
+  }
+}
+
+function cancelTileGesture(event) {
+  if (state.drag.pointerId === event.pointerId) {
+    resetTileGesture();
+  }
+}
+
+function resetTileGesture() {
+  const tile = state.drag.tile;
+  if (tile) {
+    tile.classList.remove("is-gesture-source", "is-dragging");
+    tile.style.transform = "";
+  }
+  state.drag = {
+    tile: null,
+    pointerId: null,
+    startX: 0,
+    startY: 0,
+    moved: false,
+  };
 }
 
 function paintTile(tile, stage) {

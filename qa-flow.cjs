@@ -18,6 +18,27 @@ async function solveByClicks(page) {
   }
 }
 
+async function swapByGesture(page) {
+  await page.setViewportSize({ width: 390, height: 844 });
+  const first = page.locator('.tile[data-position="0"]');
+  const second = page.locator('.tile[data-position="1"]');
+  const beforeFirst = await first.getAttribute("data-current");
+  const beforeSecond = await second.getAttribute("data-current");
+  const firstBox = await first.boundingBox();
+  const secondBox = await second.boundingBox();
+  if (!firstBox || !secondBox) throw new Error("Missing tile box");
+
+  await page.mouse.move(firstBox.x + firstBox.width / 2, firstBox.y + firstBox.height / 2);
+  await page.mouse.down();
+  await page.mouse.move(secondBox.x + secondBox.width / 2, secondBox.y + secondBox.height / 2, { steps: 8 });
+  await page.mouse.up();
+
+  const afterFirst = await first.getAttribute("data-current");
+  const afterSecond = await second.getAttribute("data-current");
+  await page.setViewportSize({ width: 1360, height: 980 });
+  return afterFirst === beforeSecond && afterSecond === beforeFirst;
+}
+
 (async () => {
   const browser = await chromium.launch({ headless: true });
   const page = await browser.newPage({ viewport: { width: 1360, height: 980 } });
@@ -73,6 +94,7 @@ async function solveByClicks(page) {
   result.peekCaption = await page.locator("#preview-caption").innerText();
   await page.locator("#shuffle-puzzle").click();
   result.afterShuffleTiles = await page.locator(".tile").count();
+  result.gestureSwapWorks = await swapByGesture(page);
   await solveByClicks(page);
   await page.waitForSelector("#unlock:not(.is-hidden)");
   result.unlockTitle = await page.locator("#unlock-title").innerText();
