@@ -382,6 +382,19 @@ function setStandaloneMode(isStandalone) {
   document.body.classList.toggle("detail-mode", isStandalone);
 }
 
+function scrollToAnchor(hash, options = {}) {
+  const target = document.querySelector(hash);
+  if (!target) return;
+  const topbar = document.querySelector(".topbar");
+  const offset = (topbar?.getBoundingClientRect().height || 0) + 16;
+  const top = target.getBoundingClientRect().top + window.scrollY - offset;
+  window.scrollTo({
+    top: Math.max(0, top),
+    left: 0,
+    behavior: options.behavior || "smooth",
+  });
+}
+
 function showHomeView(hash = "#gallery") {
   state.activeDetail = null;
   elements.detail.classList.add("is-hidden");
@@ -393,7 +406,7 @@ function showHomeView(hash = "#gallery") {
   url.search = "";
   url.hash = hash.replace("#", "");
   window.history.replaceState(null, "", url);
-  document.querySelector(hash)?.scrollIntoView({ behavior: "smooth", block: "start" });
+  window.requestAnimationFrame(() => scrollToAnchor(hash));
 }
 
 function setMusicUi(isPlaying) {
@@ -683,7 +696,7 @@ function createStageDetail(story, stage) {
   playButton.className = "stage-play-button";
   playButton.type = "button";
   playButton.textContent = isUnlocked ? "查看拼图" : `开始拼${stage.pieces}片`;
-  playButton.addEventListener("click", () => startPuzzle(story.id, stage.pieces));
+  playButton.addEventListener("click", () => startPuzzle(story.id, stage.pieces, { solved: isUnlocked }));
 
   const shareButton = document.createElement("button");
   shareButton.className = "stage-pill share-pill";
@@ -875,11 +888,12 @@ function startPuzzle(storyId, pieces, options = {}) {
   const stageIndex = story.stages.findIndex((item) => item.pieces === pieces);
   if (stageIndex < 0) return;
   const stage = story.stages[stageIndex];
+  const showSolved = Boolean(options.solved);
 
   state.active = { storyId, stageIndex };
   state.activeDetail = storyId;
   state.selectedTile = null;
-  state.solved = false;
+  state.solved = showSolved;
 
   setStandaloneMode(true);
   elements.detail.classList.add("is-hidden");
@@ -890,8 +904,10 @@ function startPuzzle(storyId, pieces, options = {}) {
   elements.boardName.textContent = `${story.childName}送给${story.motherName}`;
   elements.boardMeta.textContent = `${stage.grid} × ${stage.grid}，拼好后解锁祝福`;
   elements.sidePreview.src = stage.image;
-  elements.sideFigure.classList.remove("is-clear");
-  elements.previewCaption.textContent = "拼好后，照片会完整显现。";
+  elements.sideFigure.classList.toggle("is-clear", showSolved);
+  elements.previewCaption.textContent = showSolved
+    ? "这张拼图已经拼好，可以直接查看完整照片。"
+    : "拼好后，照片会完整显现。";
   elements.stageBlessingCount.textContent = stage.blessings.length;
   elements.stagePlayCount.textContent = stage.playCount || 0;
   elements.playCarousel.textContent = stageBlessingText(stage);
@@ -900,7 +916,7 @@ function startPuzzle(storyId, pieces, options = {}) {
     updateDetailUrl(storyId, stage.pieces);
   }
 
-  buildBoard(stage);
+  buildBoard(stage, { solved: showSolved });
   elements.play.scrollIntoView({ behavior: "smooth", block: "start" });
 }
 
@@ -911,9 +927,10 @@ function currentActive() {
   return story && stage ? { story, stage } : null;
 }
 
-function buildBoard(stage) {
+function buildBoard(stage, options = {}) {
   const total = stage.grid * stage.grid;
-  const shuffled = shufflePieces([...Array(total).keys()]);
+  const pieces = [...Array(total).keys()];
+  const shuffled = options.solved ? pieces : shufflePieces(pieces);
 
   elements.board.style.setProperty("--grid", stage.grid);
   elements.board.innerHTML = "";

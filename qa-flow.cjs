@@ -39,6 +39,28 @@ async function swapByGesture(page) {
   return afterFirst === beforeSecond && afterSecond === beforeFirst;
 }
 
+async function clickAnchorAndMeasure(page, hash) {
+  await page.locator(`.nav-links a[href="${hash}"]`).click();
+  await page.waitForFunction((selector) => {
+    const target = document.querySelector(selector);
+    const topbar = document.querySelector(".topbar");
+    if (!target || !topbar) return false;
+    const expectedTop = topbar.getBoundingClientRect().height + 16;
+    const actualTop = target.getBoundingClientRect().top;
+    return Math.abs(actualTop - expectedTop) <= 12;
+  }, hash);
+  await page.waitForTimeout(200);
+
+  return page.evaluate((selector) => {
+    const target = document.querySelector(selector);
+    const topbar = document.querySelector(".topbar");
+    return {
+      actualTop: Math.round(target.getBoundingClientRect().top),
+      expectedTop: Math.round(topbar.getBoundingClientRect().height + 16),
+    };
+  }, hash);
+}
+
 (async () => {
   const browser = await chromium.launch({ headless: true });
   const page = await browser.newPage({ viewport: { width: 1360, height: 980 } });
@@ -108,6 +130,15 @@ async function swapByGesture(page) {
   result.afterBlessingDetailVisible = await page.locator("#story-detail").isVisible();
   result.blessingListHasVisitor = (await page.locator("#story-detail").innerText()).includes("测试访客");
   result.completedButtonText = await page.locator('#detail-stages [data-stage-pieces="9"] .stage-play-button').innerText();
+  await page.locator('#detail-stages [data-stage-pieces="9"] .stage-play-button').click();
+  await page.waitForSelector(".tile");
+  result.reopenedPuzzleSolved = await page.locator(".tile").evaluateAll((tiles) =>
+    tiles.every((tile) => tile.dataset.current === tile.dataset.position)
+  );
+  result.reopenedCaption = await page.locator("#preview-caption").innerText();
+  await page.locator("#close-play").click();
+  result.rankingAnchor = await clickAnchorAndMeasure(page, "#ranking");
+  result.statsAnchor = await clickAnchorAndMeasure(page, "#stats");
   result.stats = await page.locator("#stats").innerText();
   result.errors = errors;
   await browser.close();
