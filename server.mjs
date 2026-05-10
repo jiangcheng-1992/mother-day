@@ -1,12 +1,14 @@
 import { createServer } from "node:http";
 import { randomUUID } from "node:crypto";
+import { existsSync } from "node:fs";
 import { mkdir, readFile, rename, writeFile } from "node:fs/promises";
 import { dirname, extname, resolve } from "node:path";
 
 const root = process.cwd();
 const port = Number(process.env.PORT || 4173);
 const host = process.env.HOST || "0.0.0.0";
-const dataFile = resolve(root, process.env.DATA_FILE || "data/stories.json");
+const defaultDataFile = existsSync("/var/data") ? "/var/data/stories.json" : "data/stories.json";
+const dataFile = resolve(root, process.env.DATA_FILE || defaultDataFile);
 const maxBodyBytes = Number(process.env.MAX_BODY_BYTES || 12 * 1024 * 1024);
 
 const stageMeta = [

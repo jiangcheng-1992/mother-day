@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>送给妈妈的情书</title>
     <link rel="preload" as="image" href="assets/hero-mothers-day.webp" type="image/webp" fetchpriority="high" />
-    <link rel="stylesheet" href="styles.css?v=20260510-19" />
+    <link rel="stylesheet" href="styles.css?v=20260510-20" />
   </head>
   <body>
     <header class="topbar" aria-label="网站导航">
@@ -35,6 +35,14 @@
             <a class="secondary-action" href="#gallery">开始拼这份祝福</a>
           </div>
         </div>
+        <section class="ranking-section hero-ranking" id="ranking" aria-labelledby="ranking-title">
+          <div class="section-heading">
+            <p class="eyebrow">Ranking</p>
+            <h2 id="ranking-title">祝福排行榜</h2>
+            <p>看看哪位妈妈收到了最多心意。</p>
+          </div>
+          <div class="ranking-list" id="ranking-list" aria-live="polite"></div>
+        </section>
         <div class="stats-strip" id="stats" aria-label="全站祝福统计">
           <article>
             <strong data-stat="mothers">0</strong>
@@ -49,15 +57,6 @@
             <span>句祝福被送达</span>
           </article>
         </div>
-      </section>
-
-      <section class="section ranking-section" id="ranking" aria-labelledby="ranking-title">
-        <div class="section-heading">
-          <p class="eyebrow">Ranking</p>
-          <h2 id="ranking-title">祝福排行榜</h2>
-          <p>看看哪位妈妈收到了最多心意，也把你的祝福送到她身边。</p>
-        </div>
-        <div class="ranking-list" id="ranking-list" aria-live="polite"></div>
       </section>
 
       <section class="section create-section" id="create" aria-labelledby="create-title">
@@ -244,7 +243,7 @@
       </article>
     </template>
 
-    <script src="config.js?v=20260510-19"></script>
-    <script src="app.js?v=20260510-19"></script>
+    <script src="config.js?v=20260510-20"></script>
+    <script src="app.js?v=20260510-20"></script>
   </body>
 </html>

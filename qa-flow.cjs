@@ -96,6 +96,7 @@ async function swapByGesture(page) {
   result.afterShuffleTiles = await page.locator(".tile").count();
   result.gestureSwapWorks = await swapByGesture(page);
   if (!result.gestureSwapWorks) throw new Error("Mobile gesture swap failed");
+  await page.waitForTimeout(400);
   await solveByClicks(page);
   await page.waitForSelector("#unlock:not(.is-hidden)");
   result.unlockTitle = await page.locator("#unlock-title").innerText();
