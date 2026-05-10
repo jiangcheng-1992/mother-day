@@ -16,6 +16,7 @@ const requiredAssets = [
   { path: "/styles.css", type: "text/css" },
   { path: "/app.js", type: "javascript" },
   { path: "/config.js", type: "javascript" },
+  { path: "/assets/hero-mothers-day.webp", type: "image/webp" },
   { path: "/assets/hero-mothers-day.png", type: "image/png" },
   { path: "/assets/site-music.mp3", type: "audio/" },
 ];

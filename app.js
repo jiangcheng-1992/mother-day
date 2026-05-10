@@ -85,7 +85,7 @@ function demoStories() {
       createdAt: Date.now(),
       stages: STAGE_META.map((meta, index) => ({
         ...meta,
-        image: "assets/hero-mothers-day.png",
+        image: "assets/hero-mothers-day.webp",
         blessings: [
           {
             name: "今天想念妈妈的人",
@@ -162,7 +162,7 @@ function hydrateStories() {
       const savedStage = story.stages?.[index] || {};
       return {
         ...meta,
-        image: savedStage.image || "assets/hero-mothers-day.png",
+        image: savedStage.image || "assets/hero-mothers-day.webp",
         blessings: Array.isArray(savedStage.blessings) ? savedStage.blessings : [],
         playCount: Number(savedStage.playCount || 0),
       };

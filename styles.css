@@ -129,7 +129,10 @@ img {
   background:
     linear-gradient(90deg, rgba(57, 39, 36, 0.72) 0%, rgba(57, 39, 36, 0.44) 36%, rgba(255, 248, 243, 0.06) 78%),
     linear-gradient(0deg, rgba(57, 39, 36, 0.76) 0%, transparent 40%),
-    url("assets/hero-mothers-day.png") center / cover no-repeat;
+    image-set(
+      url("assets/hero-mothers-day.webp") type("image/webp"),
+      url("assets/hero-mothers-day.png") type("image/png")
+    ) center / cover no-repeat;
 }
 
 .hero-bg::after {
@@ -377,7 +380,10 @@ h3 {
   z-index: 0;
   background:
     linear-gradient(135deg, rgba(201, 79, 99, 0.2), rgba(217, 168, 78, 0.16)),
-    url("assets/hero-mothers-day.png") center / cover no-repeat;
+    image-set(
+      url("assets/hero-mothers-day.webp") type("image/webp"),
+      url("assets/hero-mothers-day.png") type("image/png")
+    ) center / cover no-repeat;
   transition: transform 240ms ease, opacity 240ms ease;
 }
 
@@ -1320,7 +1326,10 @@ h3 {
   .hero-bg {
     background:
       linear-gradient(180deg, rgba(57, 39, 36, 0.66) 0%, rgba(57, 39, 36, 0.42) 48%, rgba(57, 39, 36, 0.7) 100%),
-      url("assets/hero-mothers-day.png") 58% center / cover no-repeat;
+      image-set(
+        url("assets/hero-mothers-day.webp") type("image/webp"),
+        url("assets/hero-mothers-day.png") type("image/png")
+      ) 58% center / cover no-repeat;
   }
 
   .stats-strip,

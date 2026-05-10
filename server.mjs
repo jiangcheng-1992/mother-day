@@ -50,7 +50,7 @@ function sanitizeImage(value) {
     return image;
   }
   if (/^assets\/[-\w./]+$/i.test(image)) return image;
-  return "assets/hero-mothers-day.png";
+  return "assets/hero-mothers-day.webp";
 }
 
 function sanitizeBlessing(blessing) {
